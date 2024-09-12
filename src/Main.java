@@ -19,13 +19,13 @@ public class Main {
                     displayEvents();
                     break;
                 case 2:
-                    buyTicket(scanner);
+                    bookTicket(scanner);
                     break;
                 case 3:
-                    displayPurchasedTickets();
+                    displayBookedTickets(scanner); // Pass scanner here
                     break;
                 case 4:
-                    System.out.println("Thank you for using the Ticketing System!");
+                    System.out.println("Thank you for using the Tickets Booking!");
                     scanner.close();
                     return;
                 default:
@@ -34,6 +34,7 @@ public class Main {
         }
     }
 
+
     private static void initializeEvents() {
         events.add(new Event("Music Festival", 100000, 200000));
         events.add(new Event("Film Festival", 100000, 200000));
@@ -41,8 +42,8 @@ public class Main {
 
     private static void displayMenu() {
         System.out.println("\n1. View Events Available");
-        System.out.println("2. Buy Ticket");
-        System.out.println("3. View Purchased Tickets");
+        System.out.println("2. Book Ticket");
+        System.out.println("3. View Booked Tickets");
         System.out.println("4. Exit");
         System.out.print("Choose an option: ");
     }
@@ -62,7 +63,7 @@ public class Main {
         }
     }
 
-private static void buyTicket(Scanner scanner) {
+private static void bookTicket(Scanner scanner) {
         try {
             displayEvents();
             System.out.print("Enter the event number: ");
@@ -84,7 +85,7 @@ private static void buyTicket(Scanner scanner) {
                 return;
             }
 
-            System.out.print("How many tickets do you want to buy? ");
+            System.out.print("How many tickets do you want to book? ");
             int quantity = scanner.nextInt();
 
             if (quantity <= 0) {
@@ -97,12 +98,12 @@ private static void buyTicket(Scanner scanner) {
                     Ticket ticket = new Ticket(selectedEvent, row);
                     tickets.add(ticket);
                 }
-                System.out.println("Tickets purchased successfully!");
+                System.out.println("Tickets booked successfully!");
                 for (int i = tickets.size() - quantity; i < tickets.size(); i++) {
                     tickets.get(i).printTicketDetails();
                 }
             } else {
-                System.out.println("Failed to purchase tickets. Not enough available.");
+                System.out.println("Failed to book tickets. Not enough available.");
             }
         } catch (InputMismatchException e) {
             System.out.println("Invalid input. Please enter a valid number.");
@@ -112,15 +113,52 @@ private static void buyTicket(Scanner scanner) {
         }
     }
 
-    private static void displayPurchasedTickets() {
+    private static void displayBookedTickets(Scanner scanner) {
         if (tickets.isEmpty()) {
-            System.out.println("No tickets purchased yet.");
-        } else {
-            System.out.println("\nPurchased Tickets:");
-            for (Ticket ticket : tickets) {
-                ticket.printTicketDetails();
-                System.out.println();
+            System.out.println("No tickets booked yet.");
+            return;
+        }
+
+        System.out.println("\nBooked Tickets:");
+        for (Ticket ticket : tickets) {
+            ticket.printTicketDetails();
+            System.out.println();
+        }
+
+        System.out.print("Do you want to cancel any ticket? (yes/no): ");
+        String response = scanner.next().toLowerCase();
+
+        if (response.equals("yes")) {
+            System.out.print("Enter the ticket ID to cancel: ");
+            String ticketIdToCancel = scanner.next().toUpperCase();
+
+            Ticket ticketToCancel = findTicketById(ticketIdToCancel);
+
+            if (ticketToCancel != null) {
+                Event event = ticketToCancel.getEvent();
+                String row = ticketToCancel.getRow();
+                int rowIndex = row.equals("A") ? 0 : 1;
+
+                // Restore the available tickets for the event
+                event.restoreTickets(rowIndex, 1);
+
+                // Remove the ticket from the list
+                tickets.remove(ticketToCancel);
+                System.out.println("Ticket with ID " + ticketIdToCancel + " has been successfully canceled.");
+            } else {
+                System.out.println("Ticket ID not found.");
             }
         }
     }
+    private static Ticket findTicketById(String ticketId) {
+
+        for (int i = 0; i < tickets.size(); i++) {
+            Ticket ticket = tickets.get(i); // Get the ticket at index i
+            if (ticket.getTicketId().equals(ticketId)) {
+                return ticket; // Return the ticket if a match is found
+            }
+        }
+        return null; // Return null if no match is found
+    }
+
 }

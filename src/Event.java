@@ -43,4 +43,12 @@ public class Event {
         return name + " - Row A: " + priceRowA + " IDR, Row B: " + priceRowB + " IDR (Available Row A: "
                 + availableTicketsPerRow.get(0) + ", Row B: " + availableTicketsPerRow.get(1) + ")";
     }
+    public boolean restoreTickets(int rowIndex, int quantity) {
+        if (rowIndex >= 0 && rowIndex < availableTicketsPerRow.size()) {
+            int availableTickets = availableTicketsPerRow.get(rowIndex);
+            availableTicketsPerRow.set(rowIndex, availableTickets + quantity); // Restore tickets
+            return true;
+        }
+        return false;
+    }
 }

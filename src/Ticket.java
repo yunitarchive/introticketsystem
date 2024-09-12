@@ -26,5 +26,15 @@ public class Ticket {
         System.out.println("Row: " + row);
         System.out.println("Price: " + price + " IDR");
     }
+    public String getTicketId() {
+        return ticketId;
+    }
+    public Event getEvent() {
+        return event; // Return the associated event
+    }
 
+    // Getter for row
+    public String getRow() {
+        return row;
+    }
 }
